@@ -2,7 +2,13 @@
   "name": "@schedules-monorepo/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start:client": "cd packages/client && npm run start",
+    "start:compile-contracts": "cd packages/smart-contracts && npx hardhat compile",
+    "start:smart-contracts": "cd packages/smart-contracts && npx hardhat node",
+    "test:smart-contracts": "cd packages/smart-contracts && npx hardhat test",
+    "test:client": "cd packages/client && npm run test"
+  },
   "private": true,
   "dependencies": {},
   "devDependencies": {
@@ -13,7 +19,7 @@
     "nx": "20.0.12",
     "prettier": "^2.6.2",
     "tslib": "^2.3.0",
-    "typescript": "~5.5.2"
+    "typescript": "~5.0.0"
   },
   "workspaces": [
     "packages/*"

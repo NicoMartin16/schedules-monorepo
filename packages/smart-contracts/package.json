@@ -1,0 +1,15 @@
+{
+  "name": "smart-contracts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
+    "hardhat": "^2.22.15"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nicolas Martin",
+  "license": "MIT",
+  "description": ""
+}
