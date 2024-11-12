@@ -7,6 +7,7 @@
     "start:compile-contracts": "cd packages/smart-contracts && npx hardhat compile",
     "start:smart-contracts": "cd packages/smart-contracts && npx hardhat node",
     "test:smart-contracts": "cd packages/smart-contracts && npx hardhat test",
+    "test:smart-contracts-coverage": "cd packages/smart-contracts && set SOLIDITY_COVERAGE=true && npx hardhat coverage",
     "test:client": "cd packages/client && npm run test"
   },
   "private": true,

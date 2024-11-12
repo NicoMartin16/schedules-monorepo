@@ -6,7 +6,7 @@ import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
 const ScheduleModule = buildModule("SchedulesModule", (m) => {
 
-  const schedules = m.contract('CourseManagementContract');
+  const schedules = m.contract('CourseContract');
 
   return {schedules};
 

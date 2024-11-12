@@ -14,7 +14,8 @@ describe("CourseManagementContract", () => {
             chain: hardhat,
             mode: "hardhat",
             transport: http(),
-        })
+
+        });
         return { courseContract, client };
     }
     
@@ -27,9 +28,9 @@ describe("CourseManagementContract", () => {
             await courseContract.write.registerUser([client.account.address, 0]);
             // // Assert
             const newUser = await courseContract.read.users([client.account.address]) as any[];
-            expect(newUser).to.be.ok;
-            expect(newUser[0]).to.equal(client.account.address);
-            expect(newUser[2]).to.be.true;
+            assert.ok(newUser);
+            assert.equal(newUser[0], client.account.address);
+            assert.isTrue(newUser[2]);
         });
         
 
@@ -39,8 +40,7 @@ describe("CourseManagementContract", () => {
             // Act
             await courseContract.write.createCourse(["Integral Calculus", "Study the principles of integral calculus", 3]);
             // Assert
-            const course = await courseContract.read.getCourse([0]) as any[];
-            console.log(course);
+            const course = await courseContract.read.courses([0]) as any[];
             assert.ok(course);
             assert.equal(course[0], "Integral Calculus");
             assert.equal(course[1], "Study the principles of integral calculus");
@@ -48,92 +48,103 @@ describe("CourseManagementContract", () => {
         
         });
         
-        // it("should get a course by id", async () => {
-        //     // Arrange
-        //     const { courseManagementContract } = await loadFixture(deployCourseManagementContractFixture);
-        //     await courseManagementContract.createCourse("Integral Calculus", "Study the principles of integral calculus", 3);
-        //     // Act
-        //     const result = await courseManagementContract.getCourse(1);
-        //     // Assert
-        //     expect(result[0]).to.equal("Integral Calculus");
-        //     expect(result[1]).to.equal("Study the principles of integral calculus");
-        //     expect(result[2]).to.equal(3);
-        //     expect(result[3]).to.be.true;
-        // });
+        it("should get a course by id", async () => {
+            // Arrange
+            const { courseContract } = await loadFixture(deployCourseManagementContractFixture);
+            await courseContract.write.createCourse(["Integral Calculus", "Study the principles of integral calculus", 3]);
+            // Act
+            const result = await courseContract.read.getCourse([0]) as any[];
+            // Assert
+            assert.equal(result[0], "Integral Calculus");
+            assert.equal(result[1], "Study the principles of integral calculus");
+            assert.equal(result[2], "3");
+            assert.isTrue(result[3]);
+        });
 
-        // it("should update a course by id", async () => {
-        //     // Arrange
-        //     const { courseManagementContract } = await loadFixture(deployCourseManagementContractFixture);
-        //     await courseManagementContract.createCourse("Integral Calculus", "Study the principles of integral calculus", 3);
-        //     // Act
-        //     const result = await courseManagementContract.updateCourse(1, "Fundamentals of Integral Calculus", "Study the principles of integral calculus", 3);
-        //     // Assert
-        //     expect(result).to.be.ok;
-        // });
+        it("should update a course by id", async () => {
+            // Arrange
+            const { courseContract } = await loadFixture(deployCourseManagementContractFixture);
+            await courseContract.write.createCourse(["Integral Calculus", "Study the principles of integral calculus", 3]);
+            // Act
+            const result = await courseContract.write.updateCourse([0, "Fundamentals of Integral Calculus", "Study the principles of integral calculus", 3]);
+            const courseUpdated = await courseContract.read.courses([0]) as any[];
+            // Assert
+            assert.ok(result);
+            assert.equal(courseUpdated[0], "Fundamentals of Integral Calculus");
+            assert.equal(courseUpdated[1], "Study the principles of integral calculus");
+            assert.equal(courseUpdated[2], 3);
+        });
 
-        // it("should list created courses", async () => {
-        //     // Arrange
-        //     const { courseManagementContract } = await loadFixture(deployCourseManagementContractFixture);
-        //     await courseManagementContract.createCourse("Differential Calculus", "Study the principles of differential calculus", 3);
-        //     await courseManagementContract.createCourse("Vector Calculus", "Study the principles of vector calculus", 3);
-        //     await courseManagementContract.createCourse("Advanced Calculus", "Study the principles of advanced calculus", 3);
-        //     // Act
-        //     const result = await courseManagementContract.listCourses();
-        //     // Assert
-        //     expect(result).to.be.an("array").that.has.lengthOf(4);
-        //     expect(result[0]).to.equal(0);
-        //     expect(result[1]).to.equal(1);
-        //     expect(result[2]).to.equal(2);
-        // });
+        it("should list created courses", async () => {
+            // Arrange
+            const { courseContract } = await loadFixture(deployCourseManagementContractFixture);
+            await courseContract.write.createCourse(["Differential Calculus", "Study the principles of differential calculus", 3]);
+            await courseContract.write.createCourse(["Vector Calculus", "Study the principles of vector calculus", 3]);
+            await courseContract.write.createCourse(["Advanced Calculus", "Study the principles of advanced calculus", 3]);
+            // Act
+            const result = await courseContract.read.listCourses() as any[];
+            // Assert
+            assert.isArray(result);
+            assert.lengthOf(result, 3);
+            assert.equal(result[0], 0);
+            assert.equal(result[1], 1);
+            assert.equal(result[2], 2);
+        });
 
-        // it("should delete a course by id", async () => {
-        //     // Arrange
-        //     const { courseManagementContract } = await loadFixture(deployCourseManagementContractFixture);
-        //     await courseManagementContract.createCourse("Differential Calculus", "Study the principles of differential calculus", 3);
-        //     // Act
-        //     const result = await courseManagementContract.deleteCourse(1);
-        //     const course = await courseManagementContract.getCourse(1);
-        //     // Assert
-        //     expect(course[3]).to.be.false;
-        // });
+        it("should delete a course by id", async () => {
+            // Arrange
+            const { courseContract } = await loadFixture(deployCourseManagementContractFixture);
+            await courseContract.write.createCourse(["Differential Calculus", "Study the principles of differential calculus", 3]);
+            // Act
+            const result = await courseContract.write.deleteCourse([0]);
+            const course = await courseContract.read.getCourse([0]) as any[];
+            // Assert
+            assert.isFalse(course[3]);
+        });
 
-        // it("should add a schedule to a course by id", async () => {
-        //     // Arrange
-        //     const { courseManagementContract } = await loadFixture(deployCourseManagementContractFixture);
-        //     await courseManagementContract.createCourse("Differential Calculus", "Study the principles of differential calculus", 3);
-        //     // Act
-        //     await courseManagementContract.addSchedule(1, 1, 8, 10);
-        //     const course = await courseManagementContract.getCourse(1);
-        //     expect(course[4]).to.equal(1);
-        //     // Assert
-        // });
+        it("should add a schedule to a course by id", async () => {
+            // Arrange
+            const { courseContract } = await loadFixture(deployCourseManagementContractFixture);
+            await courseContract.write.createCourse(["Differential Calculus", "Study the principles of differential calculus", 3]);
+            // Act
+            await courseContract.write.addSchedule([0, 1, 8, 10]);
+            const course = await courseContract.read.getCourse([0]) as any[];
+            // Assert
+            assert.equal(course[4], 1);
+        });
 
-        // it("should get a schedule by course id and schedule id", async () => {
-        //     // Arrange
-        //     const { courseManagementContract } = await loadFixture(deployCourseManagementContractFixture);
-        //     await courseManagementContract.createCourse("Differential Calculus", "Study the principles of differential calculus", 3);
-        //     await courseManagementContract.addSchedule(1, 1, 8, 10);
-        //     const course = await courseManagementContract.getCourse(1);
-        //     // Act
-        //     const result = await courseManagementContract.getSchedule(1, 1);
-        //     // Assert
-        //     expect(result[0]).to.equal(1);
-        //     expect(result[1]).to.equal(8);
-        //     expect(result[2]).to.equal(10);
-        // });
+        it("should get a schedule by course id and schedule id", async () => {
+            // Arrange
+            const { courseContract } = await loadFixture(deployCourseManagementContractFixture);
+            await courseContract.write.createCourse(["Differential Calculus", "Study the principles of differential calculus", 3]);
+            await courseContract.write.addSchedule([0, 1, 8, 10]);
+            const course = await courseContract.read.getCourse([0]) as any[];
+            // Act
+            const result = await courseContract.read.getSchedule([0, 1]) as any[];
+            // Assert
+            expect(result[0]).to.equal(1);
+            expect(result[1]).to.equal(8);
+            expect(result[2]).to.equal(10);
+        });
 
-        // it("should register a student to a course", async () => {
-        //     // Arrange
-        //     const { courseManagementContract } = await loadFixture(deployCourseManagementContractFixture);
-        //     const [address1, address2, address3] = await ethers.getSigners();
-        //     await courseManagementContract.createCourse("Differential Calculus", "Study the principles of differential calculus", 3);
-        //     await courseManagementContract.registerUser(address2.address, 0);
-        //     // Act
-        //     const result = await courseManagementContract.connect(address2).registerStudentInCourse(1);
-        //     const assignedCourses = await courseManagementContract.connect(address2).getStudentCourses();
-        //     // Assert
-        //     expect(assignedCourses[0]).to.equal(1);
-        // });
+        it("should register a student to a course", async () => {
+            // Arrange
+            const { courseContract, client } = await loadFixture(deployCourseManagementContractFixture);
+            await courseContract.write.createCourse(["Differential Calculus", "Study the principles of differential calculus", 3]);
+
+            await courseContract.write.registerUser([client.account.address, 0]);
+            // Act
+            await courseContract.write.registerStudentInCourse([0], {
+                account: client.account.address,
+            });
+            const result = await courseContract.read.getStudentCourses({
+                account: client.account.address,
+            }) as any[];
+            // Assert
+            assert.isArray(result);
+            assert.lengthOf(result, 1);
+            assert.equal(result[0], 0);
+        });
 
     });
 });
